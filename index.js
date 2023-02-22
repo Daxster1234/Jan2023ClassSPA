@@ -30,9 +30,12 @@ document.querySelector(".fa-bars").addEventListener("click", () => {
 
 router.hooks({
   before: (done, params) => {
-    const page = params && params.hasOwnProperty("page") ? capitalize(params.page) : "Home";
+    const view =
+      params && params.data && params.data.view
+        ? capitalize(params.data.view)
+        : "Home"; // Add a switch case statement to handle multiple routes
     // Add a switch case statement to handle multiple routes
-    switch (page) {
+    switch (view) {
       case "Home":
         axios
           .get(
@@ -40,24 +43,35 @@ router.hooks({
             `https://api.openweathermap.org/data/2.5/weather?q=st%20louis&appid=${process.env.OPEN_WEATHER_MAP_API_KEY}`
           )
           .then(response => {
+            console.log(response.data);
             const kelvinToFahrenheit = kelvinTemp =>
               Math.round((kelvinTemp - 273.15) * (9 / 5) + 32);
 
+            // Save Data into state
             store.Home.weather = {};
             store.Home.weather.city = response.data.name;
-            store.Home.weather.temp = kelvinToFahrenheit(response.data.main.temp);
-            store.Home.weather.feelsLike = kelvinToFahrenheit(response.data.main.feels_like);
-            store.Home.weather.description = response.data.weather[0].main;
+            store.Home.weather.temp = kelvinToFahrenheit(
+              response.data.main.temp
+            );
+            store.Home.weather.feelsLike = kelvinToFahrenheit(
+              response.data.main.feels_like
+            );
+            store.Home.weather.description =
+              response.data.weather[0].description;
+            console.log(store.Home.weather);
+
             done();
-          })
-        // .catch(err => console.log(err));
+          });
         break;
-      default :
+      default:
         done();
     }
   },
-  already: (params) => {
-    const view = params && params.data && params.data.view ? capitalize(params.data.view) : "Home";
+  already: params => {
+    const view =
+      params && params.data && params.data.view
+        ? capitalize(params.data.view)
+        : "Home";
 
     render(store[view]);
   }
