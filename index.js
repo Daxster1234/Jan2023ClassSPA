@@ -1,4 +1,3 @@
-import { doc } from 'prettier';
 import {Nav, Header, Footer, Main} from './components';
 import * as store from './store';
 import Navigo from "navigo";
