@@ -3,6 +3,7 @@ import * as store from './store';
 import Navigo from "navigo";
 import { capitalize } from "lodash";
 import axios from 'axios';
+import dotenv from 'dotenv';
 
 const router = new Navigo("/");
 
@@ -61,7 +62,24 @@ router.hooks({
         break;
       default:
         done();
+
+      // New Case for Pizza View
+    case "Pizza":
+      // New Axios get request utilizing already made environment variable
+      axios
+        .get(`${process.env.PIZZA_PLACE_API_URL}`)
+        .then(response => {
+        // Storing retrieved data in state
+          store.Pizza.pizzas = response.data;
+          done();
+        })
+        .catch((error) => {
+          console.log("It puked", error);
+          done();
+        });
+        break;
     }
+
   },
   already: params => {
     const view =
