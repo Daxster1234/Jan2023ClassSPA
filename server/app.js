@@ -1,10 +1,22 @@
 // 'Import' the Express module instead of http
 const express = require("express");
 const dotenv = require("dotenv");
+const mongoose =require("mongoose");
 
 dotenv.config();
 
+
 const PORT = process.env.PORT || 4040;
+
+mongoose.connect(process.env.MONGODB);
+const db = mongoose.connection;
+
+db.on("error", console.error.bind(console, "Connection Error:"));
+db.once(
+  "open",
+  console.log.bind(console, "Successfully opened connection to Mongo!")
+);
+
 // Initialize the Express application
 const app = express();
 
